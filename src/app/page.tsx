@@ -1,4 +1,5 @@
 export default function Home() {
+  console.log("Home");
   return (
     <>
       <p>text</p>
