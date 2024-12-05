@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
+import MobileNavigation from "./MobileNavigation";
 import Theme from "./Theme";
 
 const Navbar = () => {
@@ -23,6 +24,7 @@ const Navbar = () => {
       <p>Global Search</p>
 
       <Theme />
+      <MobileNavigation />
     </nav>
   );
 };
