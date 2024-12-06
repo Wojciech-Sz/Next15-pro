@@ -7,6 +7,7 @@ import React from "react";
 
 import { SheetClose } from "@/components/ui/sheet";
 import { sidebarLinks } from "@/constants";
+import ROUTES from "@/constants/routes";
 import { cn } from "@/lib/utils";
 
 const NavLinks = ({
@@ -15,7 +16,7 @@ const NavLinks = ({
   isMobile?: boolean;
 }) => {
   const pathname = usePathname();
-  const userId = 1;
+  const userId = "1";
 
   return (
     <>
@@ -26,7 +27,7 @@ const NavLinks = ({
           pathname === link.route;
 
         if (link.route === "/profile") {
-          if (userId) link.route = `/profile/${userId}`;
+          if (userId) link.route = ROUTES.PROFILE(userId);
         }
 
         const LinkComponent = (
@@ -36,7 +37,7 @@ const NavLinks = ({
               isActive
                 ? "primary-gradient rounded-lg text-light-900 "
                 : "text-dark300_light900",
-              "flex items-center justify-start gap-4 bg-transparent p-4"
+              "flex items-center lg:justify-start justify-center gap-4 bg-transparent p-4"
             )}
           >
             <Image
@@ -44,6 +45,7 @@ const NavLinks = ({
               alt={link.label}
               width={20}
               height={20}
+              title={link.label}
               className={cn({
                 "invert-colors": !isActive,
               })}
