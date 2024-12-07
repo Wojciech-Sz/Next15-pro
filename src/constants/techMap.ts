@@ -1,4 +1,4 @@
-export const techMap = {
+export const techMap: { [key: string]: string } = {
   threedsmax: "devicon-threedsmax-plain",
   aarch64: "devicon-aarch64-plain",
   adonisjs: "devicon-adonisjs-original",
@@ -271,8 +271,8 @@ export const techMap = {
   nestjs: "devicon-nestjs-original",
   netlify: "devicon-netlify-plain",
   networkx: "devicon-networkx-plain",
-  nextjs: "devicon-nextjs-original-wordmark",
-  next: "devicon-nextjs-original-wordmark",
+  nextjs: "devicon-nextjs-plain",
+  next: "devicon-nextjs-plain",
   nginx: "devicon-nginx-original",
   ngrx: "devicon-ngrx-plain",
   nhibernate: "devicon-nhibernate-plain-wordmark",
