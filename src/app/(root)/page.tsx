@@ -33,11 +33,6 @@ const questions = [
         name: "nextjs",
         questions: 10,
       },
-      {
-        _id: "5",
-        name: "tailwindcss",
-        questions: 10,
-      },
     ],
     author: {
       _id: "1",
@@ -54,28 +49,8 @@ const questions = [
     description: "description",
     tags: [
       {
-        _id: "1",
-        name: "react",
-        questions: 10,
-      },
-      {
-        _id: "2",
-        name: "javascript",
-        questions: 10,
-      },
-      {
-        _id: "3",
-        name: "typescript",
-        questions: 10,
-      },
-      {
-        _id: "4",
-        name: "nextjs",
-        questions: 10,
-      },
-      {
         _id: "5",
-        name: "tailwindcss",
+        name: "tailwind",
         questions: 10,
       },
     ],
@@ -94,12 +69,16 @@ interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
 }
 const Home = async ({ searchParams }: SearchParams) => {
-  const { query = "" } = await searchParams;
+  const { query = "", filter = "" } = await searchParams;
 
   const filteredQuestions = questions.filter((question) => {
-    return question.title
+    const queryMatch = question.title
       .toLowerCase()
       .includes(query?.toLowerCase());
+    const filterMatch =
+      !filter ||
+      question.tags.some((tag) => tag.name === filter);
+    return queryMatch && filterMatch;
   });
 
   return (
