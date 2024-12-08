@@ -214,11 +214,7 @@
   }
 
   .primary-gradient {
-    background: linear-gradient(
-      129deg,
-      #ff7000 0%,
-      #e2995f 100%
-    );
+    background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
   }
 
   .dark-gradient {
@@ -238,11 +234,7 @@
   }
 
   .primary-text-gradient {
-    background: linear-gradient(
-      129deg,
-      #ff7000 0%,
-      #e2995f 100%
-    );
+    background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -332,8 +324,8 @@
 }
 
 .active-theme {
-  filter: invert(53%) sepia(98%) saturate(3332%)
-    hue-rotate(0deg) brightness(104%) contrast(106%) !important;
+  filter: invert(53%) sepia(98%) saturate(3332%) hue-rotate(0deg)
+    brightness(104%) contrast(106%) !important;
 }
 
 .hash-span {
