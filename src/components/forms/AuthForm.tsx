@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -28,16 +27,13 @@ interface AuthFormProps<T extends FieldValues> {
   schema: ZodType<T>;
   defaultValues: T;
   formType: "SIGN_UP" | "SIGN_IN";
-  onSubmit: (
-    data: T
-  ) => Promise<{ success: boolean; data: T }>;
+  onSubmit: (data: T) => Promise<{ success: boolean; data: T }>;
 }
 
 const AuthForm = <T extends FieldValues>({
   schema,
   defaultValues,
   formType,
-  onSubmit,
 }: AuthFormProps<T>) => {
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -47,8 +43,7 @@ const AuthForm = <T extends FieldValues>({
     // ad auth here
   };
 
-  const buttonText =
-    formType === "SIGN_UP" ? "Sign Up" : "Sign In";
+  const buttonText = formType === "SIGN_UP" ? "Sign Up" : "Sign In";
 
   return (
     <Form {...form}>
@@ -62,19 +57,14 @@ const AuthForm = <T extends FieldValues>({
             control={form.control}
             name={field as Path<T>}
             render={({ field }) => (
-              <FormItem className="flex w-full flex-col gap-1">
+              <FormItem className="flex w-full flex-col gap-2.5">
                 <FormLabel className="paragraph-medium text-dark400_light700">
-                  {field.name.charAt(0).toUpperCase() +
-                    field.name.slice(1)}
+                  {field.name.charAt(0).toUpperCase() + field.name.slice(1)}
                 </FormLabel>
                 <FormControl>
                   <Input
                     required
-                    type={
-                      field.name === "password"
-                        ? "password"
-                        : "text"
-                    }
+                    type={field.name === "password" ? "password" : "text"}
                     {...field}
                     className="paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 no-focus min-h-12 rounded-1.5 border"
                   />
