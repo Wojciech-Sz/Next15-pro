@@ -27,8 +27,6 @@ const QuestionSchema = new Schema<IQuestion>(
   }
 );
 
-// Compound index for efficient searching
-
 const Question =
   models?.Question || model<IQuestion>("Question", QuestionSchema);
 

@@ -21,9 +21,6 @@ const AccountSchema = new Schema<IAccount>(
   { timestamps: true }
 );
 
-// Create a compound unique index on provider and providerAccountId
-AccountSchema.index({ provider: 1, providerAccountId: 1 }, { unique: true });
-
 const Account = models?.Account || model<IAccount>("Account", AccountSchema);
 
 export default Account;

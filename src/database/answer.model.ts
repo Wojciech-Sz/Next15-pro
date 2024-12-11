@@ -21,8 +21,6 @@ const AnswerSchema = new Schema<IAnswer>(
   }
 );
 
-// Compound index for efficient searching
-
 const Answer = models?.Answer || model<IAnswer>("Answer", AnswerSchema);
 
 export default Answer;
