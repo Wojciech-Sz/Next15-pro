@@ -1,9 +1,11 @@
-import { model, Schema, models, Types } from "mongoose";
+import { model, Schema, models, Types, Document } from "mongoose";
 
 export interface ITagQuestion {
   tag: Types.ObjectId;
   question: Types.ObjectId;
 }
+
+export interface TagQuestionDocument extends ITagQuestion, Document {}
 
 const TagQuestionSchema = new Schema<ITagQuestion>(
   {
