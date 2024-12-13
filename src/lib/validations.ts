@@ -96,6 +96,31 @@ export const UserSchema = z.object({
   email: z.string().min(1, { message: "Email is required." }).email({
     message: "Please provide a valid email address.",
   }),
+  bio: z.string().optional(),
+  location: z.string().optional(),
+  portfolio: z
+    .string()
+    .url({ message: "Please provide a valid URL." })
+    .optional(),
+  image: z
+    .string()
+    .url({ message: "Please provide a valid image URL." })
+    .optional(),
+  reputation: z.number().optional(),
+});
+
+export const AccountSchema = z.object({
+  userId: z.string().min(1, { message: "User ID is required" }),
+  name: z.string().min(1, { message: "Name is required" }),
+  image: z
+    .string()
+    .url({ message: "Please provide a valid image URL." })
+    .optional(),
+
+  provider: z.string().min(1, { message: "Provider is required" }),
+  providerAccountId: z
+    .string()
+    .min(1, { message: "Provider Account ID is required" }),
   password: z
     .string()
     .min(6, {
@@ -115,16 +140,6 @@ export const UserSchema = z.object({
     })
     .regex(/[^a-zA-Z0-9]/, {
       message: "Password must contain at least one special character.",
-    }),
-  bio: z.string().optional(),
-  location: z.string().optional(),
-  portfolio: z
-    .string()
-    .url({ message: "Please provide a valid URL." })
+    })
     .optional(),
-  image: z
-    .string()
-    .url({ message: "Please provide a valid image URL." })
-    .optional(),
-  reputation: z.number().optional(),
 });
