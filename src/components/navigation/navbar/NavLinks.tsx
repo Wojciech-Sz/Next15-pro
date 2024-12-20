@@ -12,18 +12,18 @@ import { cn } from "@/lib/utils";
 
 const NavLinks = ({
   isMobile = false,
+  userId,
 }: {
   isMobile?: boolean;
+  userId?: string;
 }) => {
   const pathname = usePathname();
-  const userId = "1";
 
   return (
     <>
       {sidebarLinks.map((link) => {
         const isActive =
-          (pathname.includes(link.route) &&
-            link.route.length > 1) ||
+          (pathname.includes(link.route) && link.route.length > 1) ||
           pathname === link.route;
 
         if (link.route === "/profile") {
@@ -37,7 +37,7 @@ const NavLinks = ({
               isActive
                 ? "primary-gradient rounded-lg text-light-900 "
                 : "text-dark300_light900",
-              "flex items-center lg:justify-start justify-center gap-4 bg-transparent p-4"
+              "flex items-center lg:justify-start gap-4 bg-transparent p-4"
             )}
           >
             <Image
@@ -65,9 +65,7 @@ const NavLinks = ({
             {LinkComponent}
           </SheetClose>
         ) : (
-          <React.Fragment key={link.label}>
-            {LinkComponent}
-          </React.Fragment>
+          <React.Fragment key={link.label}>{LinkComponent}</React.Fragment>
         );
       })}
     </>
