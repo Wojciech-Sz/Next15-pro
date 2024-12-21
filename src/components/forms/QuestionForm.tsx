@@ -2,11 +2,16 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MDXEditorMethods } from "@mdxeditor/editor";
+import { Loader } from "lucide-react";
 import dynamic from "next/dynamic";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import ROUTES from "@/constants/routes";
+import { toast } from "@/hooks/use-toast";
+import { createQuestion } from "@/lib/actions/question.action";
 import { AskQuestionSchema } from "@/lib/validations";
 
 import TagCard from "../cards/TagCard";
@@ -31,6 +36,9 @@ const Editor = dynamic(() => import("@/components/editor"), {
 });
 
 const QuestionForm = () => {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
   const editorRef = React.useRef<MDXEditorMethods>(null);
   const form = useForm<z.infer<typeof AskQuestionSchema>>({
     resolver: zodResolver(AskQuestionSchema),
@@ -49,14 +57,14 @@ const QuestionForm = () => {
       e.preventDefault();
       const tagInput = e.currentTarget.value.trim();
 
-      if (tagInput && tagInput.length < 15 && !field.value.includes(tagInput)) {
+      if (tagInput && tagInput.length < 30 && !field.value.includes(tagInput)) {
         form.setValue("tags", [...field.value, tagInput]);
         e.currentTarget.value = "";
         form.clearErrors("tags");
-      } else if (tagInput.length > 15) {
+      } else if (tagInput.length > 30) {
         form.setError("tags", {
           type: "manual",
-          message: "Tag cannot exceed 15 characters.",
+          message: "Tag cannot exceed 30 characters.",
         });
       } else if (field.value.includes(tagInput)) {
         form.setError("tags", {
@@ -79,8 +87,26 @@ const QuestionForm = () => {
     }
   };
 
-  const handleCreateQuestion = (data: z.infer<typeof AskQuestionSchema>) => {
-    console.log(data);
+  const handleCreateQuestion = async (
+    data: z.infer<typeof AskQuestionSchema>
+  ) => {
+    startTransition(async () => {
+      const result = await createQuestion(data);
+
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: "Question created successfully",
+        });
+        if (result.data) router.push(ROUTES.QUESTION(result.data._id));
+        else
+          toast({
+            title: `Error ${result.status}`,
+            description: result.error?.message || "Unknown error occurred.",
+            variant: "destructive",
+          });
+      }
+    });
   };
 
   return (
@@ -183,9 +209,17 @@ const QuestionForm = () => {
         <div className="mt-16 flex justify-end">
           <Button
             type="submit"
+            disabled={isPending}
             className="primary-gradient w-fit !text-light-900"
           >
-            Ask a Question
+            {isPending ? (
+              <>
+                <Loader className="mr-2 size-4 animate-spin" />
+                <span>Submitting...</span>
+              </>
+            ) : (
+              <>Ask a Question</>
+            )}
           </Button>
         </div>
       </form>
