@@ -1,15 +1,9 @@
 "use client";
 
-import {
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 
-import {
-  formUrlQuery,
-  removeKeysFromUrlQuery,
-} from "@/lib/url";
+import { formUrlQuery, removeKeysFromUrlQuery } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 import { Button } from "../ui/button";
@@ -75,8 +69,8 @@ const HomeFilter = () => {
           className={cn(
             "body-medium rounded-lg px-6 py-3 capitalize shadow-none",
             filter.value === active
-              ? "bg-primary-100 text-primary-500 hover:bg-primary-100/80 dark:bg-dark-400 dark:text-primary-500 dark:hover:bg-dark-300"
-              : "bg-light-800 text-light-500 hover:bg-light-700 dark:bg-dark-300 dark:text-light-500 dark:hover:bg-dark-200"
+              ? "bg-primary-100 text-primary-500 hover:bg-primary-100 dark:bg-dark-400 dark:text-primary-500 dark:hover:bg-dark-400"
+              : "bg-light-800 text-light-500 hover:bg-light-800 dark:bg-dark-300 dark:text-light-500 dark:hover:bg-dark-300"
           )}
         >
           {filter.name}

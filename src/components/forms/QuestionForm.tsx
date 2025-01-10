@@ -109,12 +109,12 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
           });
           if (result.data)
             router.push(ROUTES.QUESTION(result.data._id as string));
-          else
-            toast({
-              title: `Error ${result.status}`,
-              description: result.error?.message || "Unknown error occurred.",
-              variant: "destructive",
-            });
+        } else {
+          toast({
+            title: `Error ${result.status}`,
+            description: result.error?.message || "Unknown error occurred.",
+            variant: "destructive",
+          });
         }
         return;
       }
@@ -127,12 +127,12 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
           description: "Question created successfully",
         });
         if (result.data) router.push(ROUTES.QUESTION(result.data._id));
-        else
-          toast({
-            title: `Error ${result.status}`,
-            description: result.error?.message || "Unknown error occurred.",
-            variant: "destructive",
-          });
+      } else {
+        toast({
+          title: `Error ${result.status}`,
+          description: result.error?.message || "Unknown error occurred.",
+          variant: "destructive",
+        });
       }
     });
   };
