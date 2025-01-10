@@ -12,6 +12,7 @@ interface LocalSearchProps {
   icon: React.ReactNode;
   placeholder: string;
   otherClasses?: string;
+  iconPosition?: "left" | "right";
 }
 
 const LocalSearch = ({
@@ -19,6 +20,7 @@ const LocalSearch = ({
   icon,
   placeholder,
   otherClasses,
+  iconPosition = "left",
 }: LocalSearchProps) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -54,7 +56,7 @@ const LocalSearch = ({
     <div
       className={`background-light800_darkgradient flex min-h-14 grow items-center gap-4 rounded-[10px] px-4 ${otherClasses}`}
     >
-      {icon}
+      {iconPosition === "left" && icon}
       <Input
         type="text"
         value={searchQuery}
@@ -64,6 +66,7 @@ const LocalSearch = ({
         }}
         className="paragraph-regular no-focus placeholder:text-dark400_light700 border-none shadow-none outline-none"
       />
+      {iconPosition === "right" && icon}
     </div>
   );
 };
