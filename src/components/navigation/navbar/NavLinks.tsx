@@ -37,7 +37,7 @@ const NavLinks = ({
               isActive
                 ? "primary-gradient rounded-lg text-light-900 "
                 : "text-dark300_light900",
-              "flex items-center lg:justify-start gap-4 bg-transparent p-4"
+              "flex items-center justify-center lg:justify-start gap-4 bg-transparent p-4"
             )}
           >
             <Image
