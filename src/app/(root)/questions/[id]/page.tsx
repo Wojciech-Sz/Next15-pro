@@ -1,34 +1,40 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { after } from "next/server";
 import React from "react";
 
 import TagCard from "@/components/cards/TagCard";
 import Preview from "@/components/editor/Preview";
+import AnswerForm from "@/components/forms/AnswerForm";
 import Metric from "@/components/Metric";
 import UserAvatar from "@/components/UserAvatar";
 import ROUTES from "@/constants/routes";
-import { getQuestion } from "@/lib/actions/question.action";
+import {
+  getQuestion,
+  incrementQuestionViews,
+} from "@/lib/actions/question.action";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
 import { RouteParams, Tag } from "@/types/global";
-
-import View from "../view";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
   const { data: question, success } = await getQuestion({ questionId: id });
 
+  after(async () => {
+    await incrementQuestionViews({ questionId: id });
+  });
+
   if (!success || !question) return notFound();
   const { author, tags, title, content, createdAt, views, answers } = question;
   return (
     <>
-      <View questionId={id} />
       <div className="flex-start w-full flex-col">
         <div className="flex w-full flex-col-reverse justify-between">
           <div className="flex items-center justify-start gap-1">
             <UserAvatar
               id={author._id}
               name={author.name}
-              className="size-6"
+              className="size-7"
               fallbackClassName="text-sm"
             />
             <Link href={ROUTES.PROFILE(author._id)}>
@@ -80,6 +86,10 @@ const QuestionDetails = async ({ params }: RouteParams) => {
           />
         ))}
       </div>
+
+      <section className="my-5">
+        <AnswerForm />
+      </section>
     </>
   );
 };

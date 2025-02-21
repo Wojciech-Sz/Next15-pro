@@ -32,12 +32,13 @@ const NavLinks = ({
 
         const LinkComponent = (
           <Link
+            title={link.label}
             href={link.route}
             className={cn(
               isActive
                 ? "primary-gradient rounded-lg text-light-900 "
                 : "text-dark300_light900",
-              "flex items-center justify-center lg:justify-start gap-4 bg-transparent p-4"
+              "flex items-center justify-center lg:justify-start gap-4 bg-transparent py-4 lg:px-4 px-0"
             )}
           >
             <Image
@@ -45,7 +46,6 @@ const NavLinks = ({
               alt={link.label}
               width={20}
               height={20}
-              title={link.label}
               className={cn({
                 "invert-colors": !isActive,
               })}

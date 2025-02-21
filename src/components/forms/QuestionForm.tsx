@@ -5,7 +5,7 @@ import { MDXEditorMethods } from "@mdxeditor/editor";
 import { Loader } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import React, { useTransition } from "react";
+import React, { useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -45,7 +45,7 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const editorRef = React.useRef<MDXEditorMethods>(null);
+  const editorRef = useRef<MDXEditorMethods>(null);
   const form = useForm<z.infer<typeof AskQuestionSchema>>({
     resolver: zodResolver(AskQuestionSchema),
     defaultValues: {
