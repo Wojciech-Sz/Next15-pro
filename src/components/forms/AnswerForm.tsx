@@ -5,7 +5,7 @@ import { MDXEditorMethods } from "@mdxeditor/editor";
 import { Loader } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -17,26 +17,48 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { AnswerFormSchema } from "@/lib/validations";
+import { toast } from "@/hooks/use-toast";
+import { createAnswer } from "@/lib/actions/answer.action";
+import { AnswerSchema } from "@/lib/validations";
 
 const Editor = dynamic(() => import("@/components/editor"), {
   // Make sure we turn SSR off
   ssr: false,
 });
 
-const AnswerForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const AnswerForm = ({ questionId }: { questionId: string }) => {
+  const [isAnswering, startAnswerTransition] = useTransition();
   const [isAISubmitting, setIsAISubmitting] = useState(false);
   const editorRef = useRef<MDXEditorMethods>(null);
 
-  const form = useForm<z.infer<typeof AnswerFormSchema>>({
-    resolver: zodResolver(AnswerFormSchema),
+  const form = useForm<z.infer<typeof AnswerSchema>>({
+    resolver: zodResolver(AnswerSchema),
     defaultValues: {
       content: "",
     },
   });
-  const handleSubmit = async (values: z.infer<typeof AnswerFormSchema>) => {
-    console.log(values);
+  const handleSubmit = async (values: z.infer<typeof AnswerSchema>) => {
+    startAnswerTransition(async () => {
+      const result = await createAnswer({
+        questionId,
+        content: values.content,
+      });
+
+      if (result.success) {
+        form.reset();
+
+        toast({
+          title: "Success",
+          description: "Answer submitted successfully",
+        });
+      } else {
+        toast({
+          title: `Error ${result.status}`,
+          description: result.error?.message || "Unknown error occurred.",
+          variant: "destructive",
+        });
+      }
+    });
   };
 
   return (
@@ -47,9 +69,9 @@ const AnswerForm = () => {
         </h4>
         <Button
           className="btn light-border-2 dark: gap-1.5 border px-4 py-2.5 text-primary-500 shadow-none dark:text-primary-500"
-          disabled={isSubmitting || isAISubmitting}
+          disabled={isAnswering || isAISubmitting}
         >
-          {isSubmitting || isAISubmitting ? (
+          {isAnswering || isAISubmitting ? (
             <>
               Generating...
               <Loader className="mr-2 size-4 animate-spin" />
@@ -91,7 +113,7 @@ const AnswerForm = () => {
           />
           <div className="flex justify-end">
             <Button type="submit" className="primary-gradient w-fit">
-              {isSubmitting ? (
+              {isAnswering ? (
                 <>
                   Posting...
                   <Loader className="mr-2 size-4 animate-spin" />
