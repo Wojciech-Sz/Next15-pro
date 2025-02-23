@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { after } from "next/server";
 import React from "react";
 
+import AllAnswers from "@/components/answers/AllAnswers";
 import TagCard from "@/components/cards/TagCard";
 import Preview from "@/components/editor/Preview";
 import AnswerForm from "@/components/forms/AnswerForm";
@@ -27,7 +28,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
 
   if (!success || !question) return notFound();
   const {
-    success: answerSuccess,
+    success: answersSuccess,
     data: answersData,
     error: answersError,
   } = await getAnswers({
@@ -46,6 +47,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
             <UserAvatar
               id={author._id}
               name={author.name}
+              imageUrl={author.image}
               className="size-7"
               fallbackClassName="text-sm"
             />
@@ -98,7 +100,14 @@ const QuestionDetails = async ({ params }: RouteParams) => {
           />
         ))}
       </div>
-
+      <section className="my-5 ">
+        <AllAnswers
+          data={answersData?.answers}
+          success={answersSuccess}
+          error={answersError}
+          totalAnswers={answersData?.totalAnswers || 0}
+        />
+      </section>
       <section className="my-5">
         <AnswerForm questionId={question._id} />
       </section>
