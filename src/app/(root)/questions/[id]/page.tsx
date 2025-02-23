@@ -9,6 +9,7 @@ import AnswerForm from "@/components/forms/AnswerForm";
 import Metric from "@/components/Metric";
 import UserAvatar from "@/components/UserAvatar";
 import ROUTES from "@/constants/routes";
+import { getAnswers } from "@/lib/actions/answer.action";
 import {
   getQuestion,
   incrementQuestionViews,
@@ -25,6 +26,17 @@ const QuestionDetails = async ({ params }: RouteParams) => {
   });
 
   if (!success || !question) return notFound();
+  const {
+    success: answerSuccess,
+    data: answersData,
+    error: answersError,
+  } = await getAnswers({
+    questionId: id,
+    page: 1,
+    pageSize: 10,
+    filter: "latest",
+  });
+  console.log(answersData);
   const { author, tags, title, content, createdAt, views, answers } = question;
   return (
     <>

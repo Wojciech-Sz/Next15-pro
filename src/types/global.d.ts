@@ -1,9 +1,4 @@
-import type { ClassValue } from "clsx";
 import { NextResponse } from "next/server";
-
-declare module "clsx" {
-  export default function clsx(...classes: ClassValue[]): string;
-}
 
 interface Tag {
   _id: string;
@@ -55,4 +50,11 @@ interface PaginatedSearchParams {
   query?: string;
   filter?: string;
   sort?: string;
+}
+
+interface Answer {
+  _id: string;
+  author: Author;
+  content: string;
+  createdAt: Date;
 }

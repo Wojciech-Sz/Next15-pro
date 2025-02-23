@@ -1,3 +1,5 @@
+import { PaginatedSearchParams } from "./global";
+
 interface SignInWithOAuthParams {
   provider: "github" | "google";
   providerAccountId: string;
@@ -41,4 +43,8 @@ interface IncrementQuestionViewsParams {
 interface CreateAnswerParams {
   questionId: string;
   content: string;
+}
+
+interface GetAnswerParams extends PaginatedSearchParams {
+  questionId: string;
 }
