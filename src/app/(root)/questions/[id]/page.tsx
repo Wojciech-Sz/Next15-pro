@@ -16,11 +16,12 @@ import {
   incrementQuestionViews,
 } from "@/lib/actions/question.action";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
-import { RouteParams, Tag } from "@/types/global";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
-  const { data: question, success } = await getQuestion({ questionId: id });
+  const { data: question, success } = await getQuestion({
+    questionId: id,
+  });
 
   after(async () => {
     await incrementQuestionViews({ questionId: id });
@@ -38,7 +39,15 @@ const QuestionDetails = async ({ params }: RouteParams) => {
     filter: "latest",
   });
   console.log(answersData);
-  const { author, tags, title, content, createdAt, views, answers } = question;
+  const {
+    author,
+    tags,
+    title,
+    content,
+    createdAt,
+    views,
+    answers,
+  } = question;
   return (
     <>
       <div className="flex-start w-full flex-col">

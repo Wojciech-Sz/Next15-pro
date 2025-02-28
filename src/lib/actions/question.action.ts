@@ -2,15 +2,11 @@
 
 import mongoose, { FilterQuery } from "mongoose";
 
-import Question, { QuestionDocument } from "@/database/question.model";
+import Question, {
+  QuestionDocument,
+} from "@/database/question.model";
 import TagQuestion from "@/database/tag-question.model";
 import Tag, { TagDocument } from "@/database/tag.model";
-import {
-  ActionResponse,
-  ErrorResponse,
-  Question as IQuestion,
-  PaginatedSearchParams,
-} from "@/types/global";
 
 import action from "../handlers/action";
 import handleError from "../handlers/error";
@@ -24,7 +20,7 @@ import {
 
 export async function createQuestion(
   params: CreateQuestionParams
-): Promise<ActionResponse<IQuestion>> {
+): Promise<ActionResponse<Question>> {
   const validationResult = await action({
     params,
     schema: AskQuestionSchema,
@@ -51,7 +47,8 @@ export async function createQuestion(
       }
     );
 
-    if (!newQuestion) throw new Error("Question could not be created");
+    if (!newQuestion)
+      throw new Error("Question could not be created");
 
     const tagIds: mongoose.Types.ObjectId[] = [];
 
@@ -61,7 +58,10 @@ export async function createQuestion(
       const existingTag = await Tag.findOneAndUpdate(
         { name: { $regex: new RegExp(`^${tag}$`, "i") } },
 
-        { $setOnInsert: { name: tag }, $inc: { questions: 1 } },
+        {
+          $setOnInsert: { name: tag },
+          $inc: { questions: 1 },
+        },
 
         { upsert: true, new: true, session }
       );
@@ -75,7 +75,9 @@ export async function createQuestion(
       });
     }
 
-    await TagQuestion.insertMany(tagQuestionDocuments, { session });
+    await TagQuestion.insertMany(tagQuestionDocuments, {
+      session,
+    });
 
     await Question.findByIdAndUpdate(
       newQuestion._id,
@@ -117,7 +119,8 @@ export async function editQuestion(
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { title, content, tags, questionId } = validationResult.params!;
+  const { title, content, tags, questionId } =
+    validationResult.params!;
 
   const userId = validationResult?.session?.user?.id;
 
@@ -125,13 +128,18 @@ export async function editQuestion(
   session.startTransaction();
 
   try {
-    const question = await Question.findById(questionId).populate("tags");
+    const question =
+      await Question.findById(questionId).populate("tags");
 
     if (!question) throw new Error("Question not found");
 
-    if (question.author.toString() !== userId) throw new Error("Unauthorized");
+    if (question.author.toString() !== userId)
+      throw new Error("Unauthorized");
 
-    if (question.title !== title || question.content !== content) {
+    if (
+      question.title !== title ||
+      question.content !== content
+    ) {
       question.title = title;
       question.content = content;
       await question.save({ session });
@@ -145,7 +153,9 @@ export async function editQuestion(
     );
     const tagsToRemove = question.tags.filter(
       (tag: TagDocument) =>
-        !tags.some((t) => t.toLowerCase() === tag.name.toLowerCase())
+        !tags.some(
+          (t) => t.toLowerCase() === tag.name.toLowerCase()
+        )
     );
 
     const newTagDocuments = [];
@@ -155,7 +165,10 @@ export async function editQuestion(
         const existingTag = await Tag.findOneAndUpdate(
           { name: { $regex: `^${tag}$`, $options: "i" } },
 
-          { $setOnInsert: { name: tag }, $inc: { questions: 1 } },
+          {
+            $setOnInsert: { name: tag },
+            $inc: { questions: 1 },
+          },
 
           { upsert: true, new: true, session }
         );
@@ -173,7 +186,9 @@ export async function editQuestion(
     }
 
     if (tagsToRemove.length > 0) {
-      const tagIdsToRemove = tagsToRemove.map((tag: TagDocument) => tag._id);
+      const tagIdsToRemove = tagsToRemove.map(
+        (tag: TagDocument) => tag._id
+      );
 
       await Tag.updateMany(
         {
@@ -186,20 +201,26 @@ export async function editQuestion(
       );
 
       await TagQuestion.deleteMany(
-        { tag: { $in: tagIdsToRemove }, question: questionId },
+        {
+          tag: { $in: tagIdsToRemove },
+          question: questionId,
+        },
         { session }
       );
 
       question.tags = question.tags.filter(
         (tag: mongoose.Types.ObjectId) =>
-          !tagIdsToRemove.some((id: mongoose.Types.ObjectId) =>
-            id.equals(tag._id)
+          !tagIdsToRemove.some(
+            (id: mongoose.Types.ObjectId) =>
+              id.equals(tag._id)
           )
       );
     }
 
     if (newTagDocuments.length > 0) {
-      await TagQuestion.insertMany(newTagDocuments, { session });
+      await TagQuestion.insertMany(newTagDocuments, {
+        session,
+      });
     }
 
     await question.save({ session });
@@ -221,7 +242,7 @@ export async function editQuestion(
 
 export async function getQuestion(
   params: GetQuestionParams
-): Promise<ActionResponse<IQuestion>> {
+): Promise<ActionResponse<Question>> {
   const validationResult = await action({
     params,
     schema: GetQuestionSchema,
@@ -252,7 +273,9 @@ export async function getQuestion(
 
 export async function getQuestions(
   params: PaginatedSearchParams
-): Promise<ActionResponse<{ questions: IQuestion[]; isNext: boolean }>> {
+): Promise<
+  ActionResponse<{ questions: Question[]; isNext: boolean }>
+> {
   const validationResult = await action({
     params,
     schema: PaginatedSearchParamsSchema,
@@ -300,7 +323,8 @@ export async function getQuestions(
   }
 
   try {
-    const totalQuestions = await Question.countDocuments(filterQuery);
+    const totalQuestions =
+      await Question.countDocuments(filterQuery);
     const questions = await Question.find(filterQuery)
       .populate("tags", "name")
       .populate("author", "name image")
@@ -313,7 +337,10 @@ export async function getQuestions(
 
     return {
       success: true,
-      data: { questions: JSON.parse(JSON.stringify(questions)), isNext },
+      data: {
+        questions: JSON.parse(JSON.stringify(questions)),
+        isNext,
+      },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

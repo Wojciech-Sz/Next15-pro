@@ -8,7 +8,6 @@ import { AccountDocument } from "./database/account.model";
 import { UserDocument } from "./database/user.model";
 import { api } from "./lib/api";
 import { SignInSchema } from "./lib/validations";
-import { ActionResponse } from "./types/global";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [

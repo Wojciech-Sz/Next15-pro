@@ -11,9 +11,11 @@ import { z } from "zod";
 
 import ROUTES from "@/constants/routes";
 import { toast } from "@/hooks/use-toast";
-import { createQuestion, editQuestion } from "@/lib/actions/question.action";
+import {
+  createQuestion,
+  editQuestion,
+} from "@/lib/actions/question.action";
 import { AskQuestionSchema } from "@/lib/validations";
-import { Question } from "@/types/global";
 
 import TagCard from "../cards/TagCard";
 import { Button } from "../ui/button";
@@ -31,17 +33,23 @@ import { Input } from "../ui/input";
 // ForwardRefEditor.tsx
 
 // This is the only place InitializedMDXEditor is imported directly.
-const Editor = dynamic(() => import("@/components/editor"), {
-  // Make sure we turn SSR off
-  ssr: false,
-});
+const Editor = dynamic(
+  () => import("@/components/editor"),
+  {
+    // Make sure we turn SSR off
+    ssr: false,
+  }
+);
 
 interface Params {
   question?: Question;
   isEdit?: boolean;
 }
 
-const QuestionForm = ({ question, isEdit = false }: Params) => {
+const QuestionForm = ({
+  question,
+  isEdit = false,
+}: Params) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -63,7 +71,11 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
       e.preventDefault();
       const tagInput = e.currentTarget.value.trim();
 
-      if (tagInput && tagInput.length < 30 && !field.value.includes(tagInput)) {
+      if (
+        tagInput &&
+        tagInput.length < 30 &&
+        !field.value.includes(tagInput)
+      ) {
         form.setValue("tags", [...field.value, tagInput]);
         e.currentTarget.value = "";
         form.clearErrors("tags");
@@ -81,7 +93,10 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
     }
   };
 
-  const handleTagRemove = (tag: string, field: { value: string[] }) => {
+  const handleTagRemove = (
+    tag: string,
+    field: { value: string[] }
+  ) => {
     const newTags = field.value.filter((t) => t !== tag);
     form.setValue("tags", newTags);
 
@@ -108,11 +123,15 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
             description: "Question updated successfully",
           });
           if (result.data)
-            router.push(ROUTES.QUESTION(result.data._id as string));
+            router.push(
+              ROUTES.QUESTION(result.data._id as string)
+            );
         } else {
           toast({
             title: `Error ${result.status}`,
-            description: result.error?.message || "Unknown error occurred.",
+            description:
+              result.error?.message ||
+              "Unknown error occurred.",
             variant: "destructive",
           });
         }
@@ -126,11 +145,14 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
           title: "Success",
           description: "Question created successfully",
         });
-        if (result.data) router.push(ROUTES.QUESTION(result.data._id));
+        if (result.data)
+          router.push(ROUTES.QUESTION(result.data._id));
       } else {
         toast({
           title: `Error ${result.status}`,
-          description: result.error?.message || "Unknown error occurred.",
+          description:
+            result.error?.message ||
+            "Unknown error occurred.",
           variant: "destructive",
         });
       }
@@ -150,7 +172,8 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
           render={({ field }) => (
             <FormItem className="flex w-full flex-col">
               <FormLabel className="paragraph-semibold text-dark400_light800">
-                Question Title <span className="text-primary-500">*</span>
+                Question Title{" "}
+                <span className="text-primary-500">*</span>
               </FormLabel>
               <FormControl>
                 <Input
@@ -159,8 +182,8 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
                 />
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
-                Be specific and imagine you are asking a question to another
-                person.
+                Be specific and imagine you are asking a
+                question to another person.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -185,8 +208,8 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
                 />
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
-                Introduce the problem and expand on what you have put in the
-                title.
+                Introduce the problem and expand on what you
+                have put in the title.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -199,14 +222,17 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
           render={({ field }) => (
             <FormItem className="flex w-full flex-col gap-3">
               <FormLabel className="paragraph-semibold text-dark400_light800">
-                Tags <span className="text-primary-500">*</span>
+                Tags{" "}
+                <span className="text-primary-500">*</span>
               </FormLabel>
               <FormControl>
                 <div className="">
                   <Input
                     className="paragraph-regular background-light700_dark300 light-border-2 text-dark300_light700 no-focus min-h-14  border"
                     placeholder="Add tags..."
-                    onKeyDown={(e) => handleInputKeyDown(e, field)}
+                    onKeyDown={(e) =>
+                      handleInputKeyDown(e, field)
+                    }
                   />
                   {field.value.length > 0 && (
                     <div className="flex-start mt-2.5 flex-wrap gap-2">
@@ -218,7 +244,9 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
                           compact
                           remove
                           isButton
-                          handleRemove={() => handleTagRemove(tag, field)}
+                          handleRemove={() =>
+                            handleTagRemove(tag, field)
+                          }
                         />
                       ))}
                     </div>
@@ -226,8 +254,9 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
                 </div>
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
-                Add up to 3 tags to describe what your question is about. You
-                need to press enter to add a tag.
+                Add up to 3 tags to describe what your
+                question is about. You need to press enter
+                to add a tag.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -246,7 +275,11 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
                 <span>Submitting...</span>
               </>
             ) : (
-              <>{isEdit ? "Edit Question" : "Ask a Question"}</>
+              <>
+                {isEdit
+                  ? "Edit Question"
+                  : "Ask a Question"}
+              </>
             )}
           </Button>
         </div>

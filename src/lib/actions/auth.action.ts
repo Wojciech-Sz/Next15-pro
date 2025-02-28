@@ -6,7 +6,6 @@ import mongoose from "mongoose";
 import { signIn } from "@/auth";
 import Account from "@/database/account.model";
 import User from "@/database/user.model";
-import { ActionResponse, ErrorResponse } from "@/types/global";
 
 import action from "../handlers/action";
 import handleError from "../handlers/error";
@@ -16,13 +15,17 @@ import { SignInSchema, SignUpSchema } from "../validations";
 export async function signUpWithCredentials(
   params: AuthCredentialsParams
 ): Promise<ActionResponse> {
-  const validationResult = await action({ params, schema: SignUpSchema });
+  const validationResult = await action({
+    params,
+    schema: SignUpSchema,
+  });
 
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { name, username, email, password } = validationResult.params!;
+  const { name, username, email, password } =
+    validationResult.params!;
 
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -30,12 +33,18 @@ export async function signUpWithCredentials(
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      throw new Error("User with this email already exists.");
+      throw new Error(
+        "User with this email already exists."
+      );
     }
 
-    const existingUsername = await User.findOne({ username });
+    const existingUsername = await User.findOne({
+      username,
+    });
     if (existingUsername) {
-      throw new Error("User with this username already exists.");
+      throw new Error(
+        "User with this username already exists."
+      );
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -63,7 +72,11 @@ export async function signUpWithCredentials(
     );
 
     await session.commitTransaction();
-    await signIn("credentials", { email, password, redirect: false });
+    await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
 
     return { success: true };
   } catch (error) {
@@ -77,7 +90,10 @@ export async function signUpWithCredentials(
 export async function signInWithCredentials(
   params: Pick<AuthCredentialsParams, "email" | "password">
 ): Promise<ActionResponse> {
-  const validationResult = await action({ params, schema: SignInSchema });
+  const validationResult = await action({
+    params,
+    schema: SignInSchema,
+  });
 
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
@@ -94,15 +110,21 @@ export async function signInWithCredentials(
       providerAccountId: email,
     });
 
-    if (!existingAccount) throw new NotFoundError("Account");
+    if (!existingAccount)
+      throw new NotFoundError("Account");
 
     const passwordMatch = await bcrypt.compare(
       password,
       existingAccount.password
     );
-    if (!passwordMatch) throw new Error("Invalid password.");
+    if (!passwordMatch)
+      throw new Error("Invalid password.");
 
-    await signIn("credentials", { email, password, redirect: false });
+    await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
 
     return { success: true };
   } catch (error) {

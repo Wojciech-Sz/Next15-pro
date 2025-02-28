@@ -1,8 +1,6 @@
-import { ActionResponse } from "@/types/global";
-
+import { RequestError } from "../http-errors";
 import logger from "../logger";
 import handleError from "./error";
-import { RequestError } from "../http-errors";
 
 interface FetchOptions extends RequestInit {
   timeout?: number;
@@ -30,25 +28,25 @@ export async function fetchHandler<T>(
     Accept: "application/json",
   };
 
-  const headers: HeadersInit = {
-    ...defaultHeaders,
-    ...customHeaders,
-  };
+  const headers: HeadersInit = { ...defaultHeaders, ...customHeaders };
   const config: RequestInit = {
     ...restOptions,
     headers,
     signal: controller.signal,
   };
+
   try {
     const response = await fetch(url, config);
+
     clearTimeout(id);
 
     if (!response.ok) {
       throw new RequestError(response.status, `HTTP error: ${response.status}`);
     }
+
     return await response.json();
   } catch (err) {
-    const error = isError(err) ? err : new Error("Something went wrong");
+    const error = isError(err) ? err : new Error("Unknown error");
 
     if (error.name === "AbortError") {
       logger.warn(`Request to ${url} timed out`);

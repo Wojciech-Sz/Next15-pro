@@ -7,7 +7,6 @@ import LocalSearch from "@/components/search/LocalSearch";
 import ROUTES from "@/constants/routes";
 import { EMPTY_QUESTION } from "@/constants/states";
 import { getTagQuestions } from "@/lib/actions/tag.action";
-import { Question, RouteParams } from "@/types/global";
 
 const Tag = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;

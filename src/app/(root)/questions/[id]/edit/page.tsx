@@ -5,7 +5,6 @@ import { auth } from "@/auth";
 import QuestionForm from "@/components/forms/QuestionForm";
 import ROUTES from "@/constants/routes";
 import { getQuestion } from "@/lib/actions/question.action";
-import { RouteParams } from "@/types/global";
 
 const EditQuestion = async ({ params }: RouteParams) => {
   const { id } = await params;
@@ -14,7 +13,9 @@ const EditQuestion = async ({ params }: RouteParams) => {
   const session = await auth();
   if (!session) redirect("/sign-in");
 
-  const { data: question, success } = await getQuestion({ questionId: id });
+  const { data: question, success } = await getQuestion({
+    questionId: id,
+  });
   if (!success) return notFound();
 
   if (question?.author.toString() !== session?.user?.id)

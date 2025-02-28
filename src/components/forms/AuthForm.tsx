@@ -24,7 +24,6 @@ import {
 import { Input } from "@/components/ui/input";
 import ROUTES from "@/constants/routes";
 import { toast } from "@/hooks/use-toast";
-import { ActionResponse } from "@/types/global";
 
 interface AuthFormProps<T extends FieldValues> {
   schema: ZodType<T>;
@@ -67,7 +66,8 @@ const AuthForm = <T extends FieldValues>({
     }
   };
 
-  const buttonText = formType === "SIGN_UP" ? "Sign Up" : "Sign In";
+  const buttonText =
+    formType === "SIGN_UP" ? "Sign Up" : "Sign In";
 
   return (
     <Form {...form}>
@@ -83,12 +83,17 @@ const AuthForm = <T extends FieldValues>({
             render={({ field }) => (
               <FormItem className="flex w-full flex-col gap-2.5">
                 <FormLabel className="paragraph-medium text-dark400_light700">
-                  {field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+                  {field.name.charAt(0).toUpperCase() +
+                    field.name.slice(1)}
                 </FormLabel>
                 <FormControl>
                   <Input
                     required
-                    type={field.name === "password" ? "password" : "text"}
+                    type={
+                      field.name === "password"
+                        ? "password"
+                        : "text"
+                    }
                     {...field}
                     className="paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 no-focus min-h-12 rounded-1.5 border"
                   />
