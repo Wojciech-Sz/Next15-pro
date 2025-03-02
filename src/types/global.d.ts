@@ -18,7 +18,8 @@ interface Question {
   createdAt: Date;
   views: number;
   answers: number;
-  upvotes: number;
+  upVotes: number;
+  downVotes: number;
 }
 
 type ActionResponse<T = null> = {
@@ -31,11 +32,17 @@ type ActionResponse<T = null> = {
   status?: number;
 };
 
-type SuccessResponse<T = null> = ActionResponse<T> & { success: true };
-type ErrorResponse = ActionResponse<undefined> & { success: false };
+type SuccessResponse<T = null> = ActionResponse<T> & {
+  success: true;
+};
+type ErrorResponse = ActionResponse<undefined> & {
+  success: false;
+};
 
 type APIErrorResponse = NextResponse<ErrorResponse>;
-type APIResponse<T = null> = NextResponse<SuccessResponse<T> | ErrorResponse>;
+type APIResponse<T = null> = NextResponse<
+  SuccessResponse<T> | ErrorResponse
+>;
 
 interface RouteParams {
   params: Promise<Record<string, string>>;
