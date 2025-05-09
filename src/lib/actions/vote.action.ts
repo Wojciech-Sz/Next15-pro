@@ -1,7 +1,9 @@
 "use server";
 
 import mongoose, { ClientSession } from "mongoose";
+import { revalidatePath } from "next/cache";
 
+import ROUTES from "@/constants/routes";
 import { Answer, Question, Vote } from "@/database";
 
 import action from "../handlers/action";
@@ -28,18 +30,15 @@ async function updateVoteCount(
   const { targetId, targetType, voteType, change } = validationResult.params!;
 
   const Model = targetType === "question" ? Question : Answer;
-  const voteField = voteType === "upvote" ? "upvotes" : "downvotes";
+  const voteField = voteType === "upvote" ? "upVotes" : "downVotes";
 
   try {
     const result = await Model.findByIdAndUpdate(
       targetId,
-      {
-        $inc: { [voteField]: change },
-      },
+      { $inc: { [voteField]: change } },
       { new: true, session }
     );
     if (!result) throw new Error("Failed to update vote count");
-
     return { success: true };
   } catch (error) {
     return handleError(error) as ErrorResponse;
@@ -90,7 +89,7 @@ export async function createVote(
         );
       } else {
         await Vote.findOneAndUpdate(
-          existingVote._id,
+          { _id: existingVote._id },
           { voteType },
           { new: true, session }
         );
@@ -105,9 +104,19 @@ export async function createVote(
         );
       }
     } else {
-      await Vote.create([{ targetId, targetType, voteType, change: 1 }], {
-        session,
-      });
+      await Vote.create(
+        [
+          {
+            author: userId,
+            actionId: targetId,
+            actionType: targetType,
+            voteType,
+          },
+        ],
+        {
+          session,
+        }
+      );
       await updateVoteCount(
         {
           targetId,
@@ -121,6 +130,8 @@ export async function createVote(
 
     await session.commitTransaction();
     session.endSession();
+
+    revalidatePath(ROUTES.QUESTION(targetId));
 
     return {
       success: true,

@@ -21,7 +21,7 @@ const QuestionCard = ({
     createdAt,
     views,
     answers,
-    upvotes,
+    upVotes,
   },
 }: Props) => {
   return (
@@ -41,12 +41,7 @@ const QuestionCard = ({
 
       <div className="mt-3.5 flex w-full flex-wrap gap-2">
         {tags.map((tag: Tag) => (
-          <TagCard
-            key={tag._id}
-            _id={tag._id}
-            name={tag.name}
-            compact
-          />
+          <TagCard key={tag._id} _id={tag._id} name={tag.name} compact />
         ))}
       </div>
       <div className="flex-between mt-6 w-full flex-wrap gap-3">
@@ -63,13 +58,9 @@ const QuestionCard = ({
         <div className="flex items-center gap-3 max-sm:flex-wrap max-sm:justify-start">
           <Metric
             icon={
-              <ThumbsUp
-                width={16}
-                height={16}
-                className="text-gray-500 "
-              />
+              <ThumbsUp width={16} height={16} className="text-gray-500 " />
             }
-            value={upvotes}
+            value={upVotes}
             title=" Votes"
             textStyles="small-medium text-dark400_light800"
           />
@@ -86,13 +77,7 @@ const QuestionCard = ({
             textStyles="small-medium text-dark400_light800"
           />
           <Metric
-            icon={
-              <Eye
-                width={16}
-                height={16}
-                className="text-gray-500 "
-              />
-            }
+            icon={<Eye width={16} height={16} className="text-gray-500 " />}
             value={views}
             title=" Views"
             textStyles="small-medium text-dark400_light800"

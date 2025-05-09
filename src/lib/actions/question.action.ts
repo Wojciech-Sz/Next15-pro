@@ -2,9 +2,7 @@
 
 import mongoose, { FilterQuery } from "mongoose";
 
-import Question, {
-  QuestionDocument,
-} from "@/database/question.model";
+import Question, { QuestionDocument } from "@/database/question.model";
 import TagQuestion from "@/database/tag-question.model";
 import Tag, { TagDocument } from "@/database/tag.model";
 
@@ -47,8 +45,7 @@ export async function createQuestion(
       }
     );
 
-    if (!newQuestion)
-      throw new Error("Question could not be created");
+    if (!newQuestion) throw new Error("Question could not be created");
 
     const tagIds: mongoose.Types.ObjectId[] = [];
 
@@ -119,8 +116,7 @@ export async function editQuestion(
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { title, content, tags, questionId } =
-    validationResult.params!;
+  const { title, content, tags, questionId } = validationResult.params!;
 
   const userId = validationResult?.session?.user?.id;
 
@@ -128,18 +124,13 @@ export async function editQuestion(
   session.startTransaction();
 
   try {
-    const question =
-      await Question.findById(questionId).populate("tags");
+    const question = await Question.findById(questionId).populate("tags");
 
     if (!question) throw new Error("Question not found");
 
-    if (question.author.toString() !== userId)
-      throw new Error("Unauthorized");
+    if (question.author.toString() !== userId) throw new Error("Unauthorized");
 
-    if (
-      question.title !== title ||
-      question.content !== content
-    ) {
+    if (question.title !== title || question.content !== content) {
       question.title = title;
       question.content = content;
       await question.save({ session });
@@ -153,9 +144,7 @@ export async function editQuestion(
     );
     const tagsToRemove = question.tags.filter(
       (tag: TagDocument) =>
-        !tags.some(
-          (t) => t.toLowerCase() === tag.name.toLowerCase()
-        )
+        !tags.some((t) => t.toLowerCase() === tag.name.toLowerCase())
     );
 
     const newTagDocuments = [];
@@ -186,9 +175,7 @@ export async function editQuestion(
     }
 
     if (tagsToRemove.length > 0) {
-      const tagIdsToRemove = tagsToRemove.map(
-        (tag: TagDocument) => tag._id
-      );
+      const tagIdsToRemove = tagsToRemove.map((tag: TagDocument) => tag._id);
 
       await Tag.updateMany(
         {
@@ -210,9 +197,8 @@ export async function editQuestion(
 
       question.tags = question.tags.filter(
         (tag: mongoose.Types.ObjectId) =>
-          !tagIdsToRemove.some(
-            (id: mongoose.Types.ObjectId) =>
-              id.equals(tag._id)
+          !tagIdsToRemove.some((id: mongoose.Types.ObjectId) =>
+            id.equals(tag._id)
           )
       );
     }
@@ -273,9 +259,7 @@ export async function getQuestion(
 
 export async function getQuestions(
   params: PaginatedSearchParams
-): Promise<
-  ActionResponse<{ questions: Question[]; isNext: boolean }>
-> {
+): Promise<ActionResponse<{ questions: Question[]; isNext: boolean }>> {
   const validationResult = await action({
     params,
     schema: PaginatedSearchParamsSchema,
@@ -315,7 +299,7 @@ export async function getQuestions(
       sortCriteria = { createdAt: -1 };
       break;
     case "popular":
-      sortCriteria = { upvotes: -1 };
+      sortCriteria = { upVotes: -1 };
       break;
     default:
       sortCriteria = { createdAt: -1 };
@@ -323,8 +307,7 @@ export async function getQuestions(
   }
 
   try {
-    const totalQuestions =
-      await Question.countDocuments(filterQuery);
+    const totalQuestions = await Question.countDocuments(filterQuery);
     const questions = await Question.find(filterQuery)
       .populate("tags", "name")
       .populate("author", "name image")

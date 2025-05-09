@@ -2,30 +2,36 @@
 
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 
 import { toast } from "@/hooks/use-toast";
+import { createVote } from "@/lib/actions/vote.action";
 import handleError from "@/lib/handlers/error";
 import { formatNumber } from "@/lib/utils";
 
 interface Props {
   upVotes: number;
   downVotes: number;
-  hasUpVoted: boolean;
-  hasDownVoted: boolean;
+  targetType: "question" | "answer";
+  targetId: string;
+  hasVotedPromise: Promise<ActionResponse<HasVotedResponse>>;
 }
 
 const Votes = ({
   upVotes,
   downVotes,
-  hasUpVoted,
-  hasDownVoted,
+  targetType,
+  targetId,
+  hasVotedPromise,
 }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const session = useSession();
   const userId = session?.data?.user?.id;
 
-  const handleVote = (type: "up" | "down") => {
+  const { success, data } = use(hasVotedPromise);
+  const { hasUpVoted, hasDownVoted } = data || {};
+
+  const handleVote = async (voteType: "upvote" | "downvote") => {
     if (!userId) {
       return toast({
         title: "Please log in to vote",
@@ -34,8 +40,24 @@ const Votes = ({
     }
     setIsLoading(true);
     try {
+      const result = await createVote({
+        targetId,
+        targetType,
+        voteType,
+      });
+
+      if (!result.success) {
+        return toast({
+          title: "Failed to vote",
+          description:
+            result.error?.message ||
+            "Your vote was not registered. Please try again.",
+          variant: "destructive",
+        });
+      }
+
       const successMessage =
-        type === "up"
+        voteType === "upvote"
           ? `Upvote ${!hasUpVoted ? "added" : "removed"}`
           : `Downvote ${!hasDownVoted ? "added" : "removed"}`;
 
@@ -46,8 +68,7 @@ const Votes = ({
     } catch (error) {
       toast({
         title: "Something went wrong",
-        description:
-          "Your vote was not registered. Please try again.",
+        description: "Your vote was not registered. Please try again.",
         variant: "destructive",
       });
       handleError(error);
@@ -61,18 +82,14 @@ const Votes = ({
       <div className="flex-center gap-1.5">
         <Image
           src={
-            hasUpVoted
-              ? "/icons/upvoted.svg"
-              : "/icons/upvote.svg"
+            success && hasUpVoted ? "/icons/upvoted.svg" : "/icons/upvote.svg"
           }
           alt="upvote"
           width={18}
           height={18}
-          className={`cursor-pointer ${
-            isLoading && "opacity-50"
-          }`}
+          className={`cursor-pointer ${isLoading && "opacity-50"}`}
           aria-label="upvote"
-          onClick={() => !isLoading && handleVote("up")}
+          onClick={() => !isLoading && handleVote("upvote")}
         />
         <div className="flex-center background-light700_dark400 min-w-5 rounded-sm p-1">
           <p className="body-semibold text-dark300_light700">
@@ -83,18 +100,16 @@ const Votes = ({
       <div className="flex-center gap-1.5">
         <Image
           src={
-            hasDownVoted
+            success && hasDownVoted
               ? "/icons/downvoted.svg"
               : "/icons/downvote.svg"
           }
           alt="downvote"
           width={18}
           height={18}
-          className={`cursor-pointer ${
-            isLoading && "opacity-50"
-          }`}
+          className={`cursor-pointer ${isLoading && "opacity-50"}`}
           aria-label="downvote"
-          onClick={() => !isLoading && handleVote("down")}
+          onClick={() => !isLoading && handleVote("downvote")}
         />
         <div className="flex-center background-light700_dark400 min-w-5 rounded-sm p-1">
           <p className="body-semibold text-dark300_light700">

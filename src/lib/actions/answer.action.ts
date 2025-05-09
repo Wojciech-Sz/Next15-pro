@@ -5,16 +5,11 @@ import { revalidatePath } from "next/cache";
 
 import ROUTES from "@/constants/routes";
 import { Question } from "@/database";
-import Answer, {
-  AnswerDocument,
-} from "@/database/answer.model";
+import Answer, { AnswerDocument } from "@/database/answer.model";
 
 import action from "../handlers/action";
 import handleError from "../handlers/error";
-import {
-  AnswerServerSchema,
-  GetAnswerSchema,
-} from "../validations";
+import { AnswerServerSchema, GetAnswerSchema } from "../validations";
 
 export async function createAnswer(
   params: CreateAnswerParams
@@ -54,8 +49,7 @@ export async function createAnswer(
       }
     );
 
-    if (!newAnswer)
-      throw new Error("Answer could not be created");
+    if (!newAnswer) throw new Error("Answer could not be created");
 
     question.answers += 1;
 
@@ -76,9 +70,7 @@ export async function createAnswer(
   }
 }
 
-export async function getAnswers(
-  params: GetAnswerParams
-): Promise<
+export async function getAnswers(params: GetAnswerParams): Promise<
   ActionResponse<{
     answers: Answer[];
     isNext: boolean;
@@ -95,12 +87,7 @@ export async function getAnswers(
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const {
-    questionId,
-    page = 1,
-    pageSize = 10,
-    filter,
-  } = params;
+  const { questionId, page = 1, pageSize = 10, filter } = params;
 
   const skip = (Number(page) - 1) * pageSize;
   const limit = pageSize;
@@ -115,7 +102,7 @@ export async function getAnswers(
       sortCriteria = { createdAt: 1 };
       break;
     case "popular":
-      sortCriteria = { upvotes: -1 };
+      sortCriteria = { upVotes: -1 };
       break;
     default:
       sortCriteria = { createdAt: -1 };
