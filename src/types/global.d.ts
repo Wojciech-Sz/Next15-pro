@@ -40,9 +40,7 @@ type ErrorResponse = ActionResponse<undefined> & {
 };
 
 type APIErrorResponse = NextResponse<ErrorResponse>;
-type APIResponse<T = null> = NextResponse<
-  SuccessResponse<T> | ErrorResponse
->;
+type APIResponse<T = null> = NextResponse<SuccessResponse<T> | ErrorResponse>;
 
 interface RouteParams {
   params: Promise<Record<string, string>>;
@@ -62,4 +60,6 @@ interface Answer {
   author: Author;
   content: string;
   createdAt: Date;
+  upVotes: number;
+  downVotes: number;
 }
