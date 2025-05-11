@@ -1,10 +1,14 @@
 "use server";
 
+import mongoose, { PipelineStage } from "mongoose";
 import { revalidatePath } from "next/cache";
 
 import action from "../handlers/action";
 import handleError from "../handlers/error";
-import { CollectionBaseSchema } from "../validations";
+import {
+  CollectionBaseSchema,
+  PaginatedSearchParamsSchema,
+} from "../validations";
 
 import ROUTES from "@/constants/routes";
 import { Collection, Question } from "@/database";
@@ -88,6 +92,102 @@ export async function hasSavedQuestion(
       success: true,
       data: {
         saved: !!collection,
+      },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getSavedQuestions(
+  params: PaginatedSearchParams
+): Promise<ActionResponse<{ collection: Collection[]; isNext: boolean }>> {
+  const validationResult = await action({
+    params,
+    schema: PaginatedSearchParamsSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const userId = validationResult.session?.user?.id;
+  const { page = 1, pageSize = 10, query, filter } = validationResult.params!;
+
+  const skip = (Number(page) - 1) * pageSize;
+  const limit = Number(pageSize);
+
+  const sortOptions: Record<string, Record<string, 1 | -1>> = {
+    latest: { "question.createdAt": -1 },
+    oldest: { "question.createdAt": 1 },
+    mostVoted: { "question.upVotes": -1 },
+    mostViewed: { "question.views": -1 },
+    mostAnswered: { "question.answers": -1 },
+  };
+
+  const sortCriteria = sortOptions[filter as keyof typeof sortOptions] || {
+    "question.createdAt": -1,
+  };
+
+  try {
+    const pipeline: PipelineStage[] = [
+      { $match: { author: new mongoose.Types.ObjectId(userId) } },
+      {
+        $lookup: {
+          from: "questions",
+          as: "question",
+          localField: "question",
+          foreignField: "_id",
+        },
+      },
+      { $unwind: "$question" },
+      {
+        $lookup: {
+          from: "users",
+          as: "question.author",
+          localField: "question.author",
+          foreignField: "_id",
+        },
+      },
+      { $unwind: "$question.author" },
+      {
+        $lookup: {
+          from: "tags",
+          as: "question.tags",
+          localField: "question.tags",
+          foreignField: "_id",
+        },
+      },
+    ];
+
+    if (query) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { "question.title": { $regex: query, $options: "i" } },
+            { "question.content": { $regex: query, $options: "i" } },
+          ],
+        },
+      });
+    }
+
+    const [totalCount] = await Collection.aggregate([
+      ...pipeline,
+      { $count: "count" },
+    ]);
+
+    pipeline.push({ $sort: sortCriteria }, { $skip: skip }, { $limit: limit });
+    pipeline.push({ $project: { question: 1, author: 1 } });
+
+    const questions = await Collection.aggregate(pipeline);
+    const isNext = totalCount.count > skip + questions.length;
+
+    return {
+      success: true,
+      data: {
+        collection: JSON.parse(JSON.stringify(questions)),
+        isNext,
       },
     };
   } catch (error) {
