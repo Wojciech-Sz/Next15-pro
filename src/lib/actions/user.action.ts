@@ -2,11 +2,11 @@
 
 import { FilterQuery } from "mongoose";
 
+import { User } from "@/database";
+
 import action from "../handlers/action";
 import handleError from "../handlers/error";
 import { PaginatedSearchParamsSchema } from "../validations";
-
-import { User } from "@/database";
 
 export const getUsers = async (
   params: PaginatedSearchParams
@@ -30,6 +30,7 @@ export const getUsers = async (
     filterQuery.$or = [
       { name: { $regex: query, $options: "i" } },
       { email: { $regex: query, $options: "i" } },
+      { username: { $regex: query, $options: "i" } },
     ];
   }
 
