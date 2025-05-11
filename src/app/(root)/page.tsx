@@ -14,8 +14,7 @@ interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
 }
 const Home = async ({ searchParams }: SearchParams) => {
-  const { page, pageSize, query, filter } =
-    await searchParams;
+  const { page, pageSize, query, filter } = await searchParams;
 
   const { success, data, error } = await getQuestions({
     page: Number(page) || 1,
@@ -28,27 +27,19 @@ const Home = async ({ searchParams }: SearchParams) => {
   return (
     <>
       <section className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
-        <h1 className="text-dark100_light900 h1-bold">
-          All Questions
-        </h1>
+        <h1 className="text-dark100_light900 h1-bold">All Questions</h1>
         <Button
           className="primary-gradient min-h-12 px-4 py-3 !text-light-900"
           asChild
         >
-          <Link href={ROUTES.ASK_QUESTION}>
-            Ask a Question
-          </Link>
+          <Link href={ROUTES.ASK_QUESTION}>Ask a Question</Link>
         </Button>
       </section>
       <section className="mt-11">
         <LocalSearch
           route="/"
           icon={
-            <SearchIcon
-              width={24}
-              height={24}
-              className="cursor-pointer"
-            />
+            <SearchIcon width={24} height={24} className="cursor-pointer" />
           }
           placeholder="Search questions..."
           otherClasses="flex-1"
@@ -60,13 +51,10 @@ const Home = async ({ searchParams }: SearchParams) => {
         error={error}
         data={questions}
         empty={EMPTY_QUESTION}
-        render={(questions: Question[]) => (
+        render={(questions) => (
           <div className="mt-10 flex flex-col gap-6">
             {questions.map((question) => (
-              <QuestionCard
-                key={question._id}
-                question={question}
-              />
+              <QuestionCard key={question._id} question={question} />
             ))}
           </div>
         )}
