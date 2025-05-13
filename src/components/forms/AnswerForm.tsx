@@ -23,13 +23,10 @@ import { createAnswer } from "@/lib/actions/answer.action";
 import { api } from "@/lib/api";
 import { AnswerSchema } from "@/lib/validations";
 
-const Editor = dynamic(
-  () => import("@/components/editor"),
-  {
-    // Make sure we turn SSR off
-    ssr: false,
-  }
-);
+const Editor = dynamic(() => import("@/components/editor"), {
+  // Make sure we turn SSR off
+  ssr: false,
+});
 
 type Props = {
   questionId: string;
@@ -37,15 +34,9 @@ type Props = {
   questionContent: string;
 };
 
-const AnswerForm = ({
-  questionId,
-  questionTitle,
-  questionContent,
-}: Props) => {
-  const [isAnswering, startAnswerTransition] =
-    useTransition();
-  const [isAISubmitting, setIsAISubmitting] =
-    useState(false);
+const AnswerForm = ({ questionId, questionTitle, questionContent }: Props) => {
+  const [isAnswering, startAnswerTransition] = useTransition();
+  const [isAISubmitting, setIsAISubmitting] = useState(false);
   const session = useSession();
   const editorRef = useRef<MDXEditorMethods>(null);
 
@@ -55,9 +46,7 @@ const AnswerForm = ({
       content: "",
     },
   });
-  const handleSubmit = async (
-    values: z.infer<typeof AnswerSchema>
-  ) => {
+  const handleSubmit = async (values: z.infer<typeof AnswerSchema>) => {
     startAnswerTransition(async () => {
       const result = await createAnswer({
         questionId,
@@ -77,9 +66,7 @@ const AnswerForm = ({
       } else {
         toast({
           title: `Error ${result.status}`,
-          description:
-            result.error?.message ||
-            "Unknown error occurred.",
+          description: result.error?.message || "Unknown error occurred.",
           variant: "destructive",
         });
       }
@@ -91,19 +78,17 @@ const AnswerForm = ({
       setIsAISubmitting(false);
       return toast({
         title: "Login required",
-        description:
-          "You must be logged in to generate an AI answer",
+        description: "You must be logged in to generate an AI answer",
       });
     }
     setIsAISubmitting(true);
     const userAnswer = editorRef.current?.getMarkdown();
     try {
-      const { success, data, error } =
-        await api.ai.getAnswer(
-          questionTitle,
-          questionContent,
-          userAnswer
-        );
+      const { success, data, error } = await api.ai.getAnswer(
+        questionTitle,
+        questionContent,
+        userAnswer
+      );
       if (!success) {
         return toast({
           title: "Error",
@@ -111,10 +96,7 @@ const AnswerForm = ({
           variant: "destructive",
         });
       }
-      const formattedAnswer = data
-        .replace(/<br>/g, " ")
-        .toString()
-        .trim();
+      const formattedAnswer = data.replace(/<br>/g, " ").toString().trim();
       if (editorRef.current) {
         editorRef.current.setMarkdown(formattedAnswer);
         form.setValue("content", formattedAnswer);
@@ -145,8 +127,8 @@ const AnswerForm = ({
           Write your answer here
         </h4>
         <Button
-          className="btn light-border-2 dark: gap-1.5 border px-4 py-2.5 text-primary-500 shadow-none dark:text-primary-500"
-          disabled={isAnswering || isAISubmitting}
+          className="btn light-border-2 gap-1.5 border px-4 py-2.5 text-primary-500 shadow-none dark:text-primary-500"
+          disabled={true}
           onClick={generateAIAnswer}
         >
           {isAnswering || isAISubmitting ? (
@@ -190,10 +172,7 @@ const AnswerForm = ({
             )}
           />
           <div className="flex justify-end">
-            <Button
-              type="submit"
-              className="primary-gradient w-fit"
-            >
+            <Button type="submit" className="primary-gradient w-fit">
               {isAnswering ? (
                 <>
                   Posting...

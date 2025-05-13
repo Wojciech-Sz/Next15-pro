@@ -2,6 +2,9 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { formUrlQuery } from "@/lib/url";
+import { cn } from "@/lib/utils";
+
 import {
   Select,
   SelectContent,
@@ -10,9 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-
-import { formUrlQuery } from "@/lib/url";
-import { cn } from "@/lib/utils";
 
 interface Props {
   filters: { name: string; value: string }[];
