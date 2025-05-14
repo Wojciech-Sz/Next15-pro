@@ -89,7 +89,7 @@ const Votes = ({
           height={18}
           className={`cursor-pointer ${isLoading && "opacity-50"}`}
           aria-label="upvote"
-          onClick={() => !isLoading && handleVote("upvote")}
+          onMouseDown={() => !isLoading && handleVote("upvote")}
         />
         <div className="flex-center background-light700_dark400 min-w-5 rounded-sm p-1">
           <p className="body-semibold text-dark300_light700">
@@ -109,7 +109,7 @@ const Votes = ({
           height={18}
           className={`cursor-pointer ${isLoading && "opacity-50"}`}
           aria-label="downvote"
-          onClick={() => !isLoading && handleVote("downvote")}
+          onMouseDown={() => !isLoading && handleVote("downvote")}
         />
         <div className="flex-center background-light700_dark400 min-w-5 rounded-sm p-1">
           <p className="body-semibold text-dark300_light700">
