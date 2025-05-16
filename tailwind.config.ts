@@ -31,6 +31,9 @@ export default {
           "850": "#FDFDFD",
           "900": "#FFFFFF",
         },
+        link: {
+          "100": "#1DA1F2",
+        },
       },
 
       borderRadius: {
