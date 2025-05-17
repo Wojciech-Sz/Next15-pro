@@ -83,3 +83,9 @@ interface Collection {
   question: Question;
   author: string | Author;
 }
+
+interface BadgeCounts {
+  GOLD: number;
+  SILVER: number;
+  BRONZE: number;
+}
