@@ -63,6 +63,9 @@ interface Answer {
   createdAt: Date;
   upVotes: number;
   downVotes: number;
+  question: string;
+  containerClassName?: string;
+  showReadMore?: boolean;
 }
 
 interface User {

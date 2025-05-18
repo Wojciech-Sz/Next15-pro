@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import React from "react";
 
 import { auth } from "@/auth";
+import AnswerCard from "@/components/cards/AnswerCard";
 import QuestionCard from "@/components/cards/QuestionCard";
 import DataRenderer from "@/components/DataRenderer";
 import Pagination from "@/components/Pagination";
@@ -14,8 +15,12 @@ import ProfileLink from "@/components/user/ProfileLink";
 import Stats from "@/components/user/Stats";
 import UserAvatar from "@/components/UserAvatar";
 import ROUTES from "@/constants/routes";
-import { EMPTY_QUESTION } from "@/constants/states";
-import { getUser, getUserQuestions } from "@/lib/actions/user.action";
+import { EMPTY_ANSWERS, EMPTY_QUESTION } from "@/constants/states";
+import {
+  getUser,
+  getUserAnswers,
+  getUserQuestions,
+} from "@/lib/actions/user.action";
 
 const Profile = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
@@ -43,11 +48,23 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
   } = await getUserQuestions({
     userId: id,
     page: Number(page) || 1,
-    pageSize: Number(pageSize) || 2,
+    pageSize: Number(pageSize) || 10,
+  });
+
+  const {
+    success: userAnswersSuccess,
+    error: userAnswersError,
+    data: userAnswersData,
+  } = await getUserAnswers({
+    userId: id,
+    page: Number(page) || 1,
+    pageSize: Number(pageSize) || 10,
   });
 
   const { isNext: userQuestionsIsNext, questions: userQuestions } =
     userQuestionsData!;
+
+  const { isNext: userAnswersIsNext, answers: userAnswers } = userAnswersData!;
 
   const {
     name,
@@ -153,13 +170,34 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
                 </div>
               )}
             />
-            <Pagination page={page} isNext={userQuestionsIsNext} />
+            <Pagination page={page} isNext={userQuestionsIsNext || false} />
           </TabsContent>
           <TabsContent
             value="answers"
             className="mt-0 flex w-full flex-col gap-6"
           >
             List of Answers
+            <DataRenderer
+              success={userAnswersSuccess}
+              error={userAnswersError}
+              data={userAnswers}
+              empty={EMPTY_ANSWERS}
+              render={(answers) => (
+                <div className="flex w-full flex-col gap-6">
+                  {answers.map((answer) => (
+                    <AnswerCard
+                      key={answer._id}
+                      {...answer}
+                      content={answer.content.slice(0, 100)}
+                      showReadMore
+                      question={answer.question}
+                      containerClassName="card-wrapper rounded-[10px] px-7 py-9 sm:px-11"
+                    />
+                  ))}
+                </div>
+              )}
+            />
+            <Pagination page={page} isNext={userAnswersIsNext || false} />
           </TabsContent>
         </Tabs>
 

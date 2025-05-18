@@ -11,6 +11,8 @@ const ROUTES = {
   PROFILE: (id: string) => `/profile/${id}`,
   EDIT_PROFILE: (id: string) => `/profile/${id}/edit`,
   QUESTION: (id: string) => `/questions/${id}`,
+  ANSWER: (questionId: string, answerId: string) =>
+    `/questions/${questionId}#answer-${answerId}`,
   TAG: (id: string) => `/tags/${id}`,
 };
 
