@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import { CalendarDays, Link2Icon } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import React from "react";
@@ -78,16 +77,7 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
 
   const { tags: userTags } = userTagsData!;
 
-  const {
-    name,
-    username,
-    email,
-    bio,
-    location,
-    portfolio,
-    reputation,
-    createdAt,
-  } = user;
+  const { name, username, bio, location, portfolio, createdAt } = user;
 
   return (
     <>
@@ -177,7 +167,13 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
               render={(questions) => (
                 <div className="flex w-full flex-col gap-6">
                   {questions.map((question) => (
-                    <QuestionCard key={question._id} question={question} />
+                    <QuestionCard
+                      key={question._id}
+                      showActionBtns={
+                        loggedInUser?.user?.id === question.author._id
+                      }
+                      question={question}
+                    />
                   ))}
                 </div>
               )}
@@ -203,6 +199,9 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
                       content={answer.content.slice(0, 100)}
                       showReadMore
                       question={answer.question}
+                      showActionBtns={
+                        loggedInUser?.user?.id === answer.author._id
+                      }
                       containerClassName="card-wrapper rounded-[10px] px-7 py-9 sm:px-11"
                     />
                   ))}
