@@ -7,6 +7,7 @@ import React from "react";
 import { auth } from "@/auth";
 import AnswerCard from "@/components/cards/AnswerCard";
 import QuestionCard from "@/components/cards/QuestionCard";
+import TagCard from "@/components/cards/TagCard";
 import DataRenderer from "@/components/DataRenderer";
 import Pagination from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
@@ -15,11 +16,12 @@ import ProfileLink from "@/components/user/ProfileLink";
 import Stats from "@/components/user/Stats";
 import UserAvatar from "@/components/UserAvatar";
 import ROUTES from "@/constants/routes";
-import { EMPTY_ANSWERS, EMPTY_QUESTION } from "@/constants/states";
+import { EMPTY_ANSWERS, EMPTY_QUESTION, EMPTY_TAGS } from "@/constants/states";
 import {
   getUser,
   getUserAnswers,
   getUserQuestions,
+  getUserTags,
 } from "@/lib/actions/user.action";
 
 const Profile = async ({ params, searchParams }: RouteParams) => {
@@ -61,10 +63,20 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
     pageSize: Number(pageSize) || 10,
   });
 
+  const {
+    success: userTagsSuccess,
+    error: userTagsError,
+    data: userTagsData,
+  } = await getUserTags({
+    userId: id,
+  });
+
   const { isNext: userQuestionsIsNext, questions: userQuestions } =
     userQuestionsData!;
 
   const { isNext: userAnswersIsNext, answers: userAnswers } = userAnswersData!;
+
+  const { tags: userTags } = userTagsData!;
 
   const {
     name,
@@ -205,6 +217,26 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
           <h3 className="h3-bold text-dark200_light900">Top Tech</h3>
           <div className="mt-7 flex flex-col gap-4">
             <p className="body-semibold text-dark200_light900">List of Tags</p>
+            <DataRenderer
+              success={userTagsSuccess}
+              error={userTagsError}
+              data={userTags}
+              empty={EMPTY_TAGS}
+              render={(tags) => (
+                <div className="mt-3 flex w-full flex-col gap-4">
+                  {tags.map((tag) => (
+                    <TagCard
+                      key={tag._id}
+                      _id={tag._id}
+                      name={tag.name}
+                      questions={tag.count}
+                      compact
+                      showCount
+                    />
+                  ))}
+                </div>
+              )}
+            />
           </div>
         </div>
       </section>
