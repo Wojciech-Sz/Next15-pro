@@ -4,12 +4,16 @@ import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
 
 import ROUTES from "@/constants/routes";
-import { Question } from "@/database";
+import { Question, Vote } from "@/database";
 import Answer, { AnswerDocument } from "@/database/answer.model";
 
 import action from "../handlers/action";
 import handleError from "../handlers/error";
-import { AnswerServerSchema, GetAnswerSchema } from "../validations";
+import {
+  AnswerServerSchema,
+  DeleteAnswerSchema,
+  GetAnswerSchema,
+} from "../validations";
 
 export async function createAnswer(
   params: CreateAnswerParams
@@ -132,6 +136,63 @@ export async function getAnswers(params: GetAnswerParams): Promise<
       },
     };
   } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function deleteAnswer(
+  params: DeleteAnswerParams
+): Promise<ActionResponse> {
+  const validationResult = await action({
+    params,
+    schema: DeleteAnswerSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { answerId } = validationResult.params!;
+
+  const userId = validationResult?.session?.user?.id;
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+    const answer = await Answer.findById(answerId).session(session);
+
+    if (!answer) throw new Error("Answer not found");
+
+    if (answer.author.toString() !== userId) throw new Error("Unauthorized");
+
+    const question = await Question.findByIdAndUpdate(
+      answer.question,
+      { $inc: { answers: -1 } },
+      { new: true, session }
+    ).session(session);
+
+    if (!question) throw new Error("Question not found");
+
+    await Vote.deleteMany({
+      actionId: answerId,
+      actionType: "answer",
+    }).session(session);
+
+    await answer.deleteOne().session(session);
+
+    await session.commitTransaction();
+    session.endSession();
+
+    revalidatePath(ROUTES.PROFILE(userId!));
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     return handleError(error) as ErrorResponse;
   }
 }
