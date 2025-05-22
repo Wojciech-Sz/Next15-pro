@@ -2,6 +2,7 @@
 
 import mongoose, { FilterQuery } from "mongoose";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 
 import ROUTES from "@/constants/routes";
 import { Answer, Collection, Vote } from "@/database";
@@ -20,6 +21,7 @@ import {
   IncrementQuestionViewsSchema,
   PaginatedSearchParamsSchema,
 } from "../validations";
+import { createInteraction } from "./interaction.action";
 
 export async function createQuestion(
   params: CreateQuestionParams
@@ -91,6 +93,16 @@ export async function createQuestion(
       {
         session,
       }
+    );
+
+    after(
+      async () =>
+        await createInteraction({
+          action: "post",
+          actionId: newQuestion._id,
+          actionTarget: "question",
+          authorId: userId!,
+        })
     );
 
     await session.commitTransaction();
@@ -447,10 +459,21 @@ export async function deleteQuestion(
     // Delete the question itself
     await Question.deleteOne({ _id: questionId }).session(session);
 
+    after(
+      async () =>
+        await createInteraction({
+          action: "delete",
+          actionId: questionId,
+          actionTarget: "question",
+          authorId: userId!,
+        })
+    );
+
     await session.commitTransaction();
     session.endSession();
 
     revalidatePath(ROUTES.PROFILE(userId!));
+
     return {
       success: true,
     };

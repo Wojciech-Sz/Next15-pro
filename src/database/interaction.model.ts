@@ -13,7 +13,7 @@ export const InteractionActionEnums = [
 
 export interface IInteraction {
   user: Types.ObjectId;
-  action: (typeof InteractionActionEnums)[number];
+  action: string;
   actionId: Types.ObjectId;
   actionType: "question" | "answer";
 }
