@@ -32,7 +32,7 @@ async function updateVoteCount(
   const { targetId, targetType, voteType, change } = validationResult.params!;
 
   const Model = targetType === "question" ? Question : Answer;
-  const voteField = voteType === "upvote" ? "upVotes" : "downVotes";
+  const voteField = voteType === "upvote" ? "upvotes" : "downvotes";
 
   try {
     const result = await Model.findByIdAndUpdate(

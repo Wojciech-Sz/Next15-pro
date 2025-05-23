@@ -10,16 +10,16 @@ import handleError from "@/lib/handlers/error";
 import { formatNumber } from "@/lib/utils";
 
 interface Props {
-  upVotes: number;
-  downVotes: number;
+  upvotes: number;
+  downvotes: number;
   targetType: "question" | "answer";
   targetId: string;
   hasVotedPromise: Promise<ActionResponse<HasVotedResponse>>;
 }
 
 const Votes = ({
-  upVotes,
-  downVotes,
+  upvotes,
+  downvotes,
   targetType,
   targetId,
   hasVotedPromise,
@@ -93,7 +93,7 @@ const Votes = ({
         />
         <div className="flex-center background-light700_dark400 min-w-5 rounded-sm p-1">
           <p className="body-semibold text-dark300_light700">
-            {formatNumber(upVotes)}
+            {formatNumber(upvotes)}
           </p>
         </div>
       </div>
@@ -113,7 +113,7 @@ const Votes = ({
         />
         <div className="flex-center background-light700_dark400 min-w-5 rounded-sm p-1">
           <p className="body-semibold text-dark300_light700">
-            {formatNumber(downVotes)}
+            {formatNumber(downvotes)}
           </p>
         </div>
       </div>

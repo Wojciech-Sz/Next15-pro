@@ -15,8 +15,8 @@ const AnswerCard = ({
   author,
   content,
   createdAt,
-  upVotes,
-  downVotes,
+  upvotes,
+  downvotes,
   question,
   containerClassName,
   showActionBtns,
@@ -62,8 +62,8 @@ const AnswerCard = ({
         <div className="flex justify-end">
           <Suspense fallback={<div>Loading...</div>}>
             <Votes
-              upVotes={upVotes}
-              downVotes={downVotes}
+              upvotes={upvotes}
+              downvotes={downvotes}
               targetType="answer"
               targetId={_id}
               hasVotedPromise={hasVotedPromise}

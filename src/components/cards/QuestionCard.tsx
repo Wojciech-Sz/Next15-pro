@@ -23,7 +23,7 @@ const QuestionCard = ({
     createdAt,
     views,
     answers,
-    upVotes,
+    upvotes,
   },
   showActionBtns = false,
 }: Props) => {
@@ -64,7 +64,7 @@ const QuestionCard = ({
             icon={
               <ThumbsUp width={16} height={16} className="text-gray-500 " />
             }
-            value={upVotes}
+            value={upvotes}
             title=" Votes"
             textStyles="small-medium text-dark400_light800"
           />

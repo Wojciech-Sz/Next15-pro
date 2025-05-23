@@ -2,8 +2,8 @@ import { model, Schema, models, Types, Document } from "mongoose";
 
 export interface IAnswer {
   content: string;
-  upVotes: number;
-  downVotes: number;
+  upvotes: number;
+  downvotes: number;
   author: Types.ObjectId;
   question: Types.ObjectId;
 }
@@ -15,8 +15,8 @@ const AnswerSchema = new Schema<IAnswer>(
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },
     question: { type: Schema.Types.ObjectId, ref: "Question", required: true },
     content: { type: String, required: true }, // Markdown content
-    upVotes: { type: Number, default: 0 },
-    downVotes: { type: Number, default: 0 },
+    upvotes: { type: Number, default: 0 },
+    downvotes: { type: Number, default: 0 },
   },
   {
     timestamps: true,

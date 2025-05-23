@@ -19,8 +19,8 @@ interface Question {
   createdAt: Date;
   views: number;
   answers: number;
-  upVotes: number;
-  downVotes: number;
+  upvotes: number;
+  downvotes: number;
 }
 
 type ActionResponse<T = null> = {
@@ -61,8 +61,8 @@ interface Answer {
   author: Author;
   content: string;
   createdAt: Date;
-  upVotes: number;
-  downVotes: number;
+  upvotes: number;
+  downvotes: number;
   question: string;
   containerClassName?: string;
   showReadMore?: boolean;

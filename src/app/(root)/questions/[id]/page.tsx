@@ -75,8 +75,8 @@ const QuestionDetails = async ({ params, searchParams }: RouteParams) => {
           <div className="flex items-center justify-end gap-4">
             <Suspense fallback={<div>Loading...</div>}>
               <Votes
-                upVotes={question.upVotes}
-                downVotes={question.downVotes}
+                upvotes={question.upvotes}
+                downvotes={question.downvotes}
                 targetType="question"
                 targetId={question._id}
                 hasVotedPromise={hasVotedPromise}

@@ -263,7 +263,7 @@ export async function getUserStats(params: GetUserParams): Promise<
         $group: {
           _id: null,
           count: { $sum: 1 },
-          upVotes: { $sum: "$upVotes" },
+          upvotes: { $sum: "$upvotes" },
           views: { $sum: "$views" },
         },
       },
@@ -275,7 +275,7 @@ export async function getUserStats(params: GetUserParams): Promise<
         $group: {
           _id: null,
           count: { $sum: 1 },
-          upVotes: { $sum: "$upVotes" },
+          upvotes: { $sum: "$upvotes" },
         },
       },
     ]);
@@ -284,8 +284,8 @@ export async function getUserStats(params: GetUserParams): Promise<
       criteria: [
         { type: "QUESTION_COUNT", count: questionStats?.count || 0 },
         { type: "ANSWER_COUNT", count: answerStats?.count || 0 },
-        { type: "QUESTION_UP_VOTES", count: questionStats?.upVotes || 0 },
-        { type: "ANSWER_UP_VOTES", count: answerStats?.upVotes || 0 },
+        { type: "QUESTION_UP_VOTES", count: questionStats?.upvotes || 0 },
+        { type: "ANSWER_UP_VOTES", count: answerStats?.upvotes || 0 },
         { type: "TOTAL_VIEWS", count: questionStats?.views || 0 },
       ],
     });
